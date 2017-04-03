@@ -1,0 +1,485 @@
+<div class="apidocDiv">
+<style>
+/*csslint
+*/
+.apidocDiv {
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.apidocDiv a[href] {
+    color: #33f;
+    font-weight: bold;
+    text-decoration: none;
+}
+.apidocDiv a[href]:hover {
+    text-decoration: underline;
+}
+.apidocCodeCommentSpan {
+    background: #bbf;
+    color: #000;
+    display: block;
+}
+.apidocCodeKeywordSpan {
+    color: #d00;
+    font-weight: bold;
+}
+.apidocCodePre {
+    background: #eef;
+    border: 1px solid;
+    color: #777;
+    padding: 5px;
+    white-space: pre-wrap;
+}
+.apidocFooterDiv {
+    margin-top: 20px;
+    text-align: center;
+}
+.apidocModuleLi {
+    margin-top: 10px;
+}
+.apidocSectionDiv {
+    border-top: 1px solid;
+    margin-top: 20px;
+}
+.apidocSignatureSpan {
+    color: #777;
+    font-weight: bold;
+}
+</style>
+<h1>api documentation for
+    <a
+
+        href="http://github.com/raszi/node-tmp"
+
+    >tmp (v0.0.31)</a>
+</h1>
+<h4>Temporary file and directory creator</h4>
+<div class="apidocSectionDiv"><a
+    href="#apidoc.tableOfContents"
+    id="apidoc.tableOfContents"
+><h1>table of contents</h1></a><ol>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.tmp">module tmp</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.tmp.dir">
+            function <span class="apidocSignatureSpan">tmp.</span>dir
+            <span class="apidocSignatureSpan">(options, callback)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.tmp.dirSync">
+            function <span class="apidocSignatureSpan">tmp.</span>dirSync
+            <span class="apidocSignatureSpan">(options)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.tmp.file">
+            function <span class="apidocSignatureSpan">tmp.</span>file
+            <span class="apidocSignatureSpan">(options, callback)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.tmp.fileSync">
+            function <span class="apidocSignatureSpan">tmp.</span>fileSync
+            <span class="apidocSignatureSpan">(options)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.tmp.setGracefulCleanup">
+            function <span class="apidocSignatureSpan">tmp.</span>setGracefulCleanup
+            <span class="apidocSignatureSpan">()</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.tmp.tmpName">
+            function <span class="apidocSignatureSpan">tmp.</span>tmpName
+            <span class="apidocSignatureSpan">(options, callback)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.tmp.tmpNameSync">
+            function <span class="apidocSignatureSpan">tmp.</span>tmpNameSync
+            <span class="apidocSignatureSpan">(options)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <span class="apidocSignatureSpan">string <span class="apidocSignatureSpan">tmp.</span>tmpdir</span>
+
+        </li>
+
+    </ol></li>
+
+</ol></div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.tmp" id="apidoc.module.tmp">module tmp</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.tmp.dir" id="apidoc.element.tmp.dir">
+        function <span class="apidocSignatureSpan">tmp.</span>dir
+        <span class="apidocSignatureSpan">(options, callback)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function _createTmpDir(options, callback) {
+  var
+    args = _parseArguments(options, callback),
+    opts = args[0],
+    cb = args[1];
+
+  // gets a temporary filename
+  _getTmpName(opts, function _tmpNameCreated(err, name) {
+    if (err) return cb(err);
+
+    // create the directory
+    fs.mkdir(name, opts.mode || DIR_MODE, function _dirCreated(err) {
+      if (err) return cb(err);
+
+      cb(null, name, _prepareTmpDirRemoveCallback(name, opts));
+    });
+  });
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+Simple temporary directory creation, it will be removed on process exit.
+
+If the directory still contains items on process exit, then it won&#x27;t be removed.
+
+```javascript
+var tmp = require(&#x27;tmp&#x27;);
+
+tmp.<span class="apidocCodeKeywordSpan">dir</span>(function _tempDirCreated(err, path, cleanupCallback) {
+  if (err) throw err;
+
+  console.log(&#x22;Dir: &#x22;, path);
+
+  // Manual cleanup
+  cleanupCallback();
+});
+...</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.tmp.dirSync" id="apidoc.element.tmp.dirSync">
+        function <span class="apidocSignatureSpan">tmp.</span>dirSync
+        <span class="apidocSignatureSpan">(options)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function _createTmpDirSync(options) {
+  var
+    args = _parseArguments(options),
+    opts = args[0];
+
+  var name = _getTmpNameSync(opts);
+  fs.mkdirSync(name, opts.mode || DIR_MODE);
+
+  return {
+    name : name,
+    removeCallback : _prepareTmpDirRemoveCallback(name, opts)
+  };
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+### Synchronous directory creation
+
+A synchronous version of the above.
+
+```javascript
+var tmp = require(&#x27;tmp&#x27;);
+
+var tmpobj = tmp.<span class="apidocCodeKeywordSpan">dirSync</span>();
+console.log(&#x22;Dir: &#x22;, tmpobj.name);
+// Manual cleanup
+tmpobj.removeCallback();
+```
+
+Note that this might throw an exception if either the maximum limit of retries
+for creating a temporary name fails, or, in case that you do not have the permission
+...</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.tmp.file" id="apidoc.element.tmp.file">
+        function <span class="apidocSignatureSpan">tmp.</span>file
+        <span class="apidocSignatureSpan">(options, callback)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function _createTmpFile(options, callback) {
+  var
+    args = _parseArguments(options, callback),
+    opts = args[0],
+    cb = args[1];
+
+  opts.postfix = (_isUndefined(opts.postfix)) ? &#x27;.tmp&#x27; : opts.postfix;
+
+  // gets a temporary filename
+  _getTmpName(opts, function _tmpNameCreated(err, name) {
+    if (err) return cb(err);
+
+    // create and open the file
+    fs.open(name, CREATE_FLAGS, opts.mode || FILE_MODE, function _fileCreated(err, fd) {
+      if (err) return cb(err);
+
+      if (opts.discardDescriptor) {
+        return fs.close(fd, function _discardCallback(err) {
+          if (err) {
+            // Low probability, and the file exists, so this could be
+            // ignored.  If it isn&#x27;t we certainly need to unlink the
+            // file, and if that fails too its error is more
+            // important.
+            try {
+              fs.unlinkSync(name);
+            } catch (e) {
+              err = e;
+            }
+            return cb(err);
+          }
+          cb(null, name, undefined, _prepareTmpFileRemoveCallback(name, -1, opts));
+        });
+      }
+      if (opts.detachDescriptor) {
+        return cb(null, name, fd, _prepareTmpFileRemoveCallback(name, -1, opts));
+      }
+      cb(null, name, fd, _prepareTmpFileRemoveCallback(name, fd, opts));
+    });
+  });
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+### Asynchronous file creation
+
+Simple temporary file creation, the file will be closed and unlinked on process exit.
+
+```javascript
+var tmp = require(&#x27;tmp&#x27;);
+
+tmp.<span class="apidocCodeKeywordSpan">file</span>(function _tempFileCreated(err, path, fd, cleanupCallback) {
+if (err) throw err;
+
+console.log(&#x22;File: &#x22;, path);
+console.log(&#x22;Filedescriptor: &#x22;, fd);
+
+// If we don&#x27;t need the file anymore we could manually call the cleanupCallback
+// But that is not necessary if we didn&#x27;t pass the keep option because the library
+...</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.tmp.fileSync" id="apidoc.element.tmp.fileSync">
+        function <span class="apidocSignatureSpan">tmp.</span>fileSync
+        <span class="apidocSignatureSpan">(options)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function _createTmpFileSync(options) {
+  var
+    args = _parseArguments(options),
+    opts = args[0];
+
+  opts.postfix = opts.postfix || &#x27;.tmp&#x27;;
+
+  var name = _getTmpNameSync(opts);
+  var fd = fs.openSync(name, CREATE_FLAGS, opts.mode || FILE_MODE);
+
+  return {
+    name : name,
+    fd : fd,
+    removeCallback : _prepareTmpFileRemoveCallback(name, fd, opts)
+  };
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+### Synchronous file creation
+
+A synchronous version of the above.
+
+```javascript
+var tmp = require(&#x27;tmp&#x27;);
+
+var tmpobj = tmp.<span class="apidocCodeKeywordSpan">fileSync</span>();
+console.log(&#x22;File: &#x22;, tmpobj.name);
+console.log(&#x22;Filedescriptor: &#x22;, tmpobj.fd);
+
+// If we don&#x27;t need the file anymore we could manually call the removeCallback
+// But that is not necessary if we didn&#x27;t pass the keep option because the library
+// will clean after itself.
+tmpobj.removeCallback();
+...</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.tmp.setGracefulCleanup" id="apidoc.element.tmp.setGracefulCleanup">
+        function <span class="apidocSignatureSpan">tmp.</span>setGracefulCleanup
+        <span class="apidocSignatureSpan">()</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function _setGracefulCleanup() {
+  _gracefulCleanup = true;
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+
+One may want to cleanup the temporary files even when an uncaught exception
+occurs. To enforce this, you can call the `setGracefulCleanup()` method:
+
+```javascript
+var tmp = require(&#x27;tmp&#x27;);
+
+tmp.<span class="apidocCodeKeywordSpan">setGracefulCleanup</span>();
+```
+
+## Options
+
+All options are optional :)
+
+* `mode`: the file mode to create with, it fallbacks to `0600` on file creation and `0700` on directory creation
+...</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.tmp.tmpName" id="apidoc.element.tmp.tmpName">
+        function <span class="apidocSignatureSpan">tmp.</span>tmpName
+        <span class="apidocSignatureSpan">(options, callback)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function _getTmpName(options, callback) {
+  var
+    args = _parseArguments(options, callback),
+    opts = args[0],
+    cb = args[1],
+    tries = opts.tries || DEFAULT_TRIES;
+
+  if (isNaN(tries) || tries &#x3c; 0)
+    return cb(new Error(&#x27;Invalid tries&#x27;));
+
+  if (opts.template &#x26;&#x26; !opts.template.match(TEMPLATE_PATTERN))
+    return cb(new Error(&#x27;Invalid template provided&#x27;));
+
+  (function _getUniqueName() {
+    var name = _generateTmpName(opts);
+
+    // check whether the path exists then retry if needed
+    fs.stat(name, function (err) {
+      if (!err) {
+        if (tries-- &#x3e; 0) return _getUniqueName();
+
+        return cb(new Error(&#x27;Could not get a unique tmp filename, max tries reached &#x27; + name));
+      }
+
+      cb(null, name);
+    });
+  }());
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+
+It is possible with this library to generate a unique filename in the specified
+directory.
+
+```javascript
+var tmp = require(&#x27;tmp&#x27;);
+
+tmp.<span class="apidocCodeKeywordSpan">tmpName</span>(function _tempNameGenerated(err, path) {
+    if (err) throw err;
+
+    console.log(&#x22;Created temporary filename: &#x22;, path);
+});
+```
+
+### Synchronous filename generation
+...</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.tmp.tmpNameSync" id="apidoc.element.tmp.tmpNameSync">
+        function <span class="apidocSignatureSpan">tmp.</span>tmpNameSync
+        <span class="apidocSignatureSpan">(options)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function _getTmpNameSync(options) {
+  var
+    args = _parseArguments(options),
+    opts = args[0],
+    tries = opts.tries || DEFAULT_TRIES;
+
+  if (isNaN(tries) || tries &#x3c; 0)
+    throw new Error(&#x27;Invalid tries&#x27;);
+
+  if (opts.template &#x26;&#x26; !opts.template.match(TEMPLATE_PATTERN))
+    throw new Error(&#x27;Invalid template provided&#x27;);
+
+  do {
+    var name = _generateTmpName(opts);
+    try {
+      fs.statSync(name);
+    } catch (e) {
+      return name;
+    }
+  } while (tries-- &#x3e; 0);
+
+  throw new Error(&#x27;Could not get a unique tmp filename, max tries reached&#x27;);
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+### Synchronous filename generation
+
+A synchronous version of the above.
+
+```javascript
+var tmp = require(&#x27;tmp&#x27;);
+
+var name = tmp.<span class="apidocCodeKeywordSpan">tmpNameSync</span>();
+console.log(&#x22;Created temporary filename: &#x22;, name);
+```
+
+## Advanced usage
+
+### Asynchronous file creation
+...</pre></li>
+    </ul>
+
+
+
+
+</div>
+
+<div class="apidocFooterDiv">
+    [ this document was created with
+    <a href="https://github.com/kaizhu256/node-utility2" target="_blank">utility2</a>
+    ]
+</div>
+</div>
